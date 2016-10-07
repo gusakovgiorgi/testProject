@@ -1,13 +1,15 @@
-package net.gusakov.testprojectexample;
+package net.gusakov.testprojectexample.adapters;
 
 import android.content.Context;
-import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
+
+import net.gusakov.testprojectexample.R;
+import net.gusakov.testprojectexample.adapters.ImageAdapter;
 
 /**
  * Created by hasana on 10/6/2016.
@@ -18,7 +20,7 @@ public class ListViewAdapter extends BaseAdapter {
     LayoutInflater lInflater;
     Integer[] objects;
 
-    ListViewAdapter(Context context, Integer[] images) {
+    public ListViewAdapter(Context context, Integer[] images) {
         ctx = context;
         objects = images;
         lInflater = (LayoutInflater) ctx
@@ -46,9 +48,14 @@ public class ListViewAdapter extends BaseAdapter {
             final Gallery gallery = (Gallery) galleryView.findViewById(R.id.gallery1);
             gallery.setAdapter(new ImageAdapter(ctx));
             return galleryView;
+        }else {
+            ImageView view=(ImageView)convertView;
+            if(view==null) {
+                view = new ImageView(ctx);
+            }
+            view.setImageResource(objects[position]);
+            view.setScaleType(ImageView.ScaleType.FIT_XY);
+            return view;
         }
-        ImageView view=new ImageView(ctx);
-        view.setImageResource(objects[position]);
-        return view;
     }
 }

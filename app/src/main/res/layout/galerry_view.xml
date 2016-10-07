@@ -1,4 +1,24 @@
-<Gallery   xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/gallery1"
-    android:layout_width="wrap_content"
-    android:layout_height="500dp" />
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    >
+    <ImageView
+        android:id="@+id/above_divider_id"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:src="@drawable/above_divider"/>
+    <Gallery
+        android:layout_below="@id/above_divider_id"
+        android:id="@+id/gallery1"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        />
+
+    <ImageView
+        android:layout_below="@id/gallery1"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:src="@drawable/bottom_divider"/>
+
+
+</RelativeLayout>

@@ -1,13 +1,18 @@
 package net.gusakov.testprojectexample;
 
+import android.app.ActivityManager;
+import android.content.Context;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Gallery;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import net.gusakov.testprojectexample.adapters.ListViewAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,6 +21,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+//        setSupportActionBar(myToolbar);
+//
+//        // Get a support ActionBar corresponding to this toolbar
+//        ActionBar ab = getSupportActionBar();
+//        ab.setDisplayShowTitleEnabled(false);
+//
+//        View bitMoreView=myToolbar.findViewById(R.id.bit_more_id);
+//        bitMoreView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(MainActivity.this,"bit more button clicked",Toast.LENGTH_SHORT).show();
+//            }
+//        });
+
         Integer[] mImage = {R.drawable.tmp_album1,null, R.drawable.tmp_album2};
 
         ListViewAdapter listViewAdapter = new ListViewAdapter(this, mImage);
@@ -23,5 +43,15 @@ public class MainActivity extends AppCompatActivity {
         // настраиваем список
         ListView lvMain = (ListView) findViewById(R.id.lvMain);
         lvMain.setAdapter(listViewAdapter);
+
+    }
+
+    // Get a MemoryInfo object for the device's current memory status.
+    private ActivityManager.MemoryInfo getAvailableMemory() {
+        ActivityManager activityManager = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+        activityManager.getMemoryInfo(memoryInfo);
+        return memoryInfo;
+
     }
 }
