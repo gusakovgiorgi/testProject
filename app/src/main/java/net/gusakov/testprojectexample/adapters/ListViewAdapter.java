@@ -1,15 +1,31 @@
 package net.gusakov.testprojectexample.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import net.gusakov.testprojectexample.R;
 import net.gusakov.testprojectexample.adapters.ImageAdapter;
+
+import java.util.NoSuchElementException;
+
+import static android.R.attr.bitmap;
 
 /**
  * Created by hasana on 10/6/2016.
@@ -19,12 +35,20 @@ public class ListViewAdapter extends BaseAdapter {
     Context ctx;
     LayoutInflater lInflater;
     Integer[] objects;
+    private int screenWidth;
+
 
     public ListViewAdapter(Context context, Integer[] images) {
         ctx = context;
         objects = images;
         lInflater = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        screenWidth=size.x;
+
     }
     @Override
     public int getCount() {
@@ -49,13 +73,75 @@ public class ListViewAdapter extends BaseAdapter {
             gallery.setAdapter(new ImageAdapter(ctx));
             return galleryView;
         }else {
-            ImageView view=(ImageView)convertView;
-            if(view==null) {
+            ImageView view=null;
+            if(convertView instanceof ImageView) {
+                view = (ImageView) convertView;
+            }
+            if (view == null) {
                 view = new ImageView(ctx);
             }
+
             view.setImageResource(objects[position]);
-            view.setScaleType(ImageView.ScaleType.FIT_XY);
+//            view.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            AbsListView.LayoutParams layoutParams = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            view.setLayoutParams(layoutParams);
+            scaleImage(view);
+
+
             return view;
         }
     }
+
+    private void scaleImage(ImageView view) throws NoSuchElementException {
+        // Get bitmap from the the ImageView.
+        Bitmap bitmap = null;
+
+        try {
+            Drawable drawing = view.getDrawable();
+            bitmap = ((BitmapDrawable) drawing).getBitmap();
+        } catch (NullPointerException e) {
+            throw new NoSuchElementException("No drawable on given view");
+        } catch (ClassCastException e) {
+            // Check bitmap is Ion drawable
+//            bitmap = Ion.with(view).getBitmap();
+        }
+
+        // Get current dimensions AND the desired bounding box
+        int width = 0;
+
+        try {
+            width = bitmap.getWidth();
+        } catch (NullPointerException e) {
+            throw new NoSuchElementException("Can't find bitmap on given view/drawable");
+        }
+
+
+        int height = bitmap.getHeight();
+        int bounding =screenWidth;
+
+        float xScale = ((float) bounding) / width;
+
+        Matrix matrix = new Matrix();
+        matrix.postScale(xScale, xScale);
+
+        // Create a new bitmap and convert it to a format understood by the ImageView
+        Bitmap scaledBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
+        width = scaledBitmap.getWidth(); // re-use
+        height = scaledBitmap.getHeight(); // re-use
+        BitmapDrawable result = new BitmapDrawable(scaledBitmap);
+
+        // Apply the scaled bitmap
+        view.setImageDrawable(result);
+
+        // Now change ImageView's dimensions to match the scaled image
+        AbsListView.LayoutParams params = (AbsListView.LayoutParams) view.getLayoutParams();
+        params.width = width;
+        params.height = height;
+        view.setLayoutParams(params);
+    }
+
+//    private int dpToPx(int dp) {
+//        float density = getApplicationContext().getResources().getDisplayMetrics().density;
+//        return Math.round((float)dp * density);
+//    }
 }

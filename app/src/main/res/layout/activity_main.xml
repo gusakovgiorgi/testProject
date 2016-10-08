@@ -28,6 +28,9 @@
         android:paddingTop="70dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:smoothScrollbar="true"
+        android:scrollingCache="false"
+        android:animationCache="false"
         android:divider="@null"
         android:dividerHeight="0px">
     </ListView>

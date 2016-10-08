@@ -36,7 +36,8 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-        Integer[] mImage = {R.drawable.tmp_album1,null, R.drawable.tmp_album2};
+        Integer[] mImage = {R.drawable.news,null, R.drawable.menu,R.drawable.main1,R.drawable.main2,R.drawable.main3
+                ,R.drawable.main4};
 
         ListViewAdapter listViewAdapter = new ListViewAdapter(this, mImage);
 
@@ -46,12 +47,4 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // Get a MemoryInfo object for the device's current memory status.
-    private ActivityManager.MemoryInfo getAvailableMemory() {
-        ActivityManager activityManager = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
-        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
-        activityManager.getMemoryInfo(memoryInfo);
-        return memoryInfo;
-
-    }
 }
