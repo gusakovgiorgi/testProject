@@ -1,5 +1,6 @@
 package net.gusakov.testprojectexample.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -80,6 +81,7 @@ public class ListViewAdapter extends BaseAdapter {
                         galleryIntent.putExtra(KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGES_ARRAY,mImage);
                         galleryIntent.putExtra(KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGE_POSITION,(int)v.getTag(KEY_IMAGE_VIEW_TAG));
                         ctx.startActivity(galleryIntent);
+                        ((Activity)ctx).overridePendingTransition( R.anim.slide_in_up,R.anim.stay);
                     }
                 });
 //            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
