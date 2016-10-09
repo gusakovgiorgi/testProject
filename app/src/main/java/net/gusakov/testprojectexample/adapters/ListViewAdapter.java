@@ -7,7 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Point;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.Image;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +36,8 @@ public class ListViewAdapter extends BaseAdapter {
     private int screenWidth;
     private final int[] mImage = {R.drawable.tmp_poster1, R.drawable.tmp_poster2};
     public static final int KEY_IMAGE_VIEW_TAG = -100;
+    private int previousViewWidth;
+    private int previousViewHeight;
     public static final String KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGES_ARRAY = "GALLERY_ACTIVITY_INTENT_EXTRA_IMAGES_ARRAY";
     public static final String KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGE_POSITION = "GALLERY_ACTIVITY_INTENT_EXTRA_IMAGE_POSITION";
 
@@ -91,7 +95,26 @@ public class ListViewAdapter extends BaseAdapter {
 //            gallery.setAdapter(new GalleryAdapter(ctx));
 //            return galleryView;
             return galleryView;
-        }else {
+        }else if(position==6) {
+            ImageView view=new ImageView(ctx);
+                            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(getPreviousViewWidth(), getPreviousViewHeight());
+            view.setBackgroundResource(R.drawable.metro_animation);
+                view.setLayoutParams(params);
+//                view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            view.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View v) {
+                    AnimationDrawable loadingAnimation = (AnimationDrawable) v.getBackground();
+
+                    loadingAnimation.start();
+                }
+
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+                }
+            });
+            return view;
+        }else{
             ImageView view=null;
             if(convertView instanceof ImageView) {
                 view = (ImageView) convertView;
@@ -100,7 +123,8 @@ public class ListViewAdapter extends BaseAdapter {
                 view = new ImageView(ctx);
             }
 
-            setScaledImage(view,objects[position],1.0f);
+
+                setScaledImage(view, objects[position], 1.0f);
 
 
             return view;
@@ -149,9 +173,21 @@ public class ListViewAdapter extends BaseAdapter {
         // Apply the scaled bitmap
         view.setImageDrawable(result);
 
+        saveDimensions(width,height);
         // Now change ImageView's dimensions to match the scaled image
         AbsListView.LayoutParams params = new AbsListView.LayoutParams(width,height);
         view.setLayoutParams(params);
+    }
+
+    private void saveDimensions(int width, int height) {
+        previousViewWidth=width;
+        previousViewHeight=height;
+    }
+    private int getPreviousViewWidth(){
+        return previousViewWidth;
+    }
+    private int getPreviousViewHeight(){
+        return previousViewHeight;
     }
 
 //    private int dpToPx(int dp) {
