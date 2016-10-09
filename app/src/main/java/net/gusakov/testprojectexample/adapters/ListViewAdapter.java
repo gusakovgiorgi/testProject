@@ -16,9 +16,12 @@ import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 import net.gusakov.testprojectexample.R;
 import net.gusakov.testprojectexample.adapters.ImageAdapter;
@@ -36,6 +39,7 @@ public class ListViewAdapter extends BaseAdapter {
     LayoutInflater lInflater;
     Integer[] objects;
     private int screenWidth;
+    private final Integer[] mImage = {R.drawable.tmp_poster1, R.drawable.tmp_poster2};
 
 
     public ListViewAdapter(Context context, Integer[] images) {
@@ -69,8 +73,16 @@ public class ListViewAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         if (position==1){
             View galleryView =lInflater.inflate(R.layout.galerry_view,parent,false);
-            final Gallery gallery = (Gallery) galleryView.findViewById(R.id.gallery1);
-            gallery.setAdapter(new ImageAdapter(ctx));
+            LinearLayout linearLayout=(LinearLayout) galleryView.findViewById(R.id.containerId);
+            for(int i=0;i<mImage.length;i++) {
+                ImageView imageView=new ImageView(ctx);
+                setScaledImage(imageView, mImage[i], 0.8f);
+//            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                linearLayout.addView(imageView);
+            }
+//            gallery.setAdapter(new ImageAdapter(ctx));
+//            return galleryView;
             return galleryView;
         }else {
             ImageView view=null;
@@ -81,24 +93,20 @@ public class ListViewAdapter extends BaseAdapter {
                 view = new ImageView(ctx);
             }
 
-            view.setImageResource(objects[position]);
-//            view.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            AbsListView.LayoutParams layoutParams = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            view.setLayoutParams(layoutParams);
-            scaleImage(view);
+            setScaledImage(view,objects[position],1.0f);
 
 
             return view;
         }
     }
 
-    private void scaleImage(ImageView view) throws NoSuchElementException {
+    private void setScaledImage(ImageView view,int drawableId,float scaleParameter) throws NoSuchElementException {
         // Get bitmap from the the ImageView.
         Bitmap bitmap = null;
 
         try {
-            Drawable drawing = view.getDrawable();
-            bitmap = ((BitmapDrawable) drawing).getBitmap();
+            bitmap = BitmapFactory.decodeResource(ctx.getResources(), drawableId);
+
         } catch (NullPointerException e) {
             throw new NoSuchElementException("No drawable on given view");
         } catch (ClassCastException e) {
@@ -117,7 +125,7 @@ public class ListViewAdapter extends BaseAdapter {
 
 
         int height = bitmap.getHeight();
-        int bounding =screenWidth;
+        int bounding =(int)(screenWidth*scaleParameter);
 
         float xScale = ((float) bounding) / width;
 
@@ -128,15 +136,14 @@ public class ListViewAdapter extends BaseAdapter {
         Bitmap scaledBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
         width = scaledBitmap.getWidth(); // re-use
         height = scaledBitmap.getHeight(); // re-use
+        bitmap.recycle();
         BitmapDrawable result = new BitmapDrawable(scaledBitmap);
 
         // Apply the scaled bitmap
         view.setImageDrawable(result);
 
         // Now change ImageView's dimensions to match the scaled image
-        AbsListView.LayoutParams params = (AbsListView.LayoutParams) view.getLayoutParams();
-        params.width = width;
-        params.height = height;
+        AbsListView.LayoutParams params = new AbsListView.LayoutParams(width,height);
         view.setLayoutParams(params);
     }
 
