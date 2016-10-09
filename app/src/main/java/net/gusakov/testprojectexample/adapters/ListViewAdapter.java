@@ -6,8 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,20 +13,12 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
-import android.widget.Gallery;
-import android.widget.HorizontalScrollView;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
 
 import net.gusakov.testprojectexample.R;
-import net.gusakov.testprojectexample.adapters.ImageAdapter;
 
 import java.util.NoSuchElementException;
-
-import static android.R.attr.bitmap;
 
 /**
  * Created by hasana on 10/6/2016.
@@ -72,7 +62,7 @@ public class ListViewAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (position==1){
-            View galleryView =lInflater.inflate(R.layout.galerry_view,parent,false);
+            View galleryView =lInflater.inflate(R.layout.horizontalView,parent,false);
             LinearLayout linearLayout=(LinearLayout) galleryView.findViewById(R.id.containerId);
             for(int i=0;i<mImage.length;i++) {
                 ImageView imageView=new ImageView(ctx);
