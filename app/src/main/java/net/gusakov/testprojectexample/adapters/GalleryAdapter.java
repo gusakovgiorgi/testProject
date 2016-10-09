@@ -17,20 +17,20 @@ import net.gusakov.testprojectexample.R;
  * Created by hasana on 10/6/2016.
  */
 
-public class ImageAdapter extends BaseAdapter {
+public class GalleryAdapter extends BaseAdapter {
 
-    private int mGalleryItemBackground;
     private Context mContext;
-    private final Integer[] mImage = {R.drawable.tmp_poster1, R.drawable.tmp_poster2};
+    private  int[] mImage = null;
     int screenWidth;
 
-    public ImageAdapter(Context ctx){
+    public GalleryAdapter(Context ctx,int[] imageResourceArray){
         mContext=ctx;
-        WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        screenWidth = size.x;
+        mImage=imageResourceArray;
+//        WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
+//        Display display = wm.getDefaultDisplay();
+//        Point size = new Point();
+//        display.getSize(size);
+//        screenWidth = size.x;
     }
 
     @Override
@@ -50,13 +50,13 @@ public class ImageAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        int imageWidth=(int)(screenWidth*0.7);
+//        int imageWidth=(int)(screenWidth*0.7);
         ImageView view=(ImageView)convertView;
         if(convertView==null) {
             view = new ImageView(mContext);
         }
         view.setImageResource(mImage[position]);
-        view.setLayoutParams(new Gallery.LayoutParams(imageWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+        view.setLayoutParams(new Gallery.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
         return view;

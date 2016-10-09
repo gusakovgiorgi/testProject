@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -20,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Log.v("MyTag",String.valueOf(getResources().getDisplayMetrics().density));
 
 //        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
 //        setSupportActionBar(myToolbar);
@@ -44,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
         // настраиваем список
         ListView lvMain = (ListView) findViewById(R.id.lvMain);
         lvMain.setAdapter(listViewAdapter);
+
+
 
     }
 

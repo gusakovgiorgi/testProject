@@ -1,6 +1,7 @@
 package net.gusakov.testprojectexample.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -16,6 +17,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import net.gusakov.testprojectexample.Gallery_activity;
 import net.gusakov.testprojectexample.R;
 
 import java.util.NoSuchElementException;
@@ -29,7 +31,10 @@ public class ListViewAdapter extends BaseAdapter {
     LayoutInflater lInflater;
     Integer[] objects;
     private int screenWidth;
-    private final Integer[] mImage = {R.drawable.tmp_poster1, R.drawable.tmp_poster2};
+    private final int[] mImage = {R.drawable.tmp_poster1, R.drawable.tmp_poster2};
+    public static final int KEY_IMAGE_VIEW_TAG = -100;
+    public static final String KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGES_ARRAY = "GALLERY_ACTIVITY_INTENT_EXTRA_IMAGES_ARRAY";
+    public static final String KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGE_POSITION = "GALLERY_ACTIVITY_INTENT_EXTRA_IMAGE_POSITION";
 
 
     public ListViewAdapter(Context context, Integer[] images) {
@@ -41,7 +46,7 @@ public class ListViewAdapter extends BaseAdapter {
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        screenWidth=size.x;
+        screenWidth = size.x;
 
     }
     @Override
@@ -62,16 +67,26 @@ public class ListViewAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (position==1){
-            View galleryView =lInflater.inflate(R.layout.horizontalView,parent,false);
+            View galleryView =lInflater.inflate(R.layout.horizontal_view,parent,false);
             LinearLayout linearLayout=(LinearLayout) galleryView.findViewById(R.id.containerId);
-            for(int i=0;i<mImage.length;i++) {
+            for(int imageInScrollViewPosition=0;imageInScrollViewPosition<mImage.length;imageInScrollViewPosition++) {
                 ImageView imageView=new ImageView(ctx);
-                setScaledImage(imageView, mImage[i], 0.8f);
+                setScaledImage(imageView, mImage[imageInScrollViewPosition], 0.8f);
+                imageView.setTag(KEY_IMAGE_VIEW_TAG,imageInScrollViewPosition);
+                imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent galleryIntent=new Intent(ctx, Gallery_activity.class);
+                        galleryIntent.putExtra(KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGES_ARRAY,mImage);
+                        galleryIntent.putExtra(KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGE_POSITION,(int)v.getTag(KEY_IMAGE_VIEW_TAG));
+                        ctx.startActivity(galleryIntent);
+                    }
+                });
 //            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
                 linearLayout.addView(imageView);
             }
-//            gallery.setAdapter(new ImageAdapter(ctx));
+//            gallery.setAdapter(new GalleryAdapter(ctx));
 //            return galleryView;
             return galleryView;
         }else {
