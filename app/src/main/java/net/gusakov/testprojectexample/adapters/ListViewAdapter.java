@@ -5,7 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
@@ -97,7 +100,7 @@ public class ListViewAdapter extends BaseAdapter {
             return galleryView;
         }else if(position==6) {
             ImageView view=new ImageView(ctx);
-                            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(getPreviousViewWidth(), getPreviousViewHeight());
+                            AbsListView.LayoutParams params = new AbsListView.LayoutParams(getPreviousViewWidth(), getPreviousViewHeight());
             view.setBackgroundResource(R.drawable.metro_animation);
                 view.setLayoutParams(params);
 //                view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -114,6 +117,8 @@ public class ListViewAdapter extends BaseAdapter {
                 }
             });
             return view;
+        }else if(position==7) {
+            return returnDrawedView();
         }else{
             ImageView view=null;
             if(convertView instanceof ImageView) {
@@ -131,6 +136,31 @@ public class ListViewAdapter extends BaseAdapter {
         }
     }
 
+    private View returnDrawedView(){
+        Bitmap bitmap = BitmapFactory.decodeResource(ctx
+                .getResources(), R.drawable.first_album_template);
+        /* set other image top of the first icon */
+        Bitmap tmpBitMap = BitmapFactory.decodeResource(ctx
+                .getResources(), R.drawable.tmp_album_1);
+        Matrix matrix=new Matrix();
+        matrix.setRotate(2.0f,tmpBitMap.getWidth()/2,tmpBitMap.getHeight()/2);
+        Bitmap rotatedBitmap = Bitmap.createBitmap(tmpBitMap,0,0,tmpBitMap.getWidth(),tmpBitMap.getHeight(),matrix,true);
+//        rotatedBitmap.eraseColor(Color.TRANSPARENT);
+
+        Bitmap bmOverlay = Bitmap.createBitmap(bitmap.getWidth(),
+                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bmOverlay);
+//        canvas.drawARGB(0x00, 0, 0, 0);
+        canvas.drawBitmap(bitmap, 0, 0, null);
+        canvas.drawBitmap(rotatedBitmap,80,140,null);
+        BitmapDrawable dr = new BitmapDrawable(bmOverlay);
+        dr.setBounds(0, 0, dr.getIntrinsicWidth(), dr.getIntrinsicHeight());
+
+        ImageView imageView=new ImageView(ctx);
+                imageView.setImageDrawable(dr);
+        return imageView;
+    }
     private void setScaledImage(ImageView view,int drawableId,float scaleParameter) throws NoSuchElementException {
         // Get bitmap from the the ImageView.
         Bitmap bitmap = null;

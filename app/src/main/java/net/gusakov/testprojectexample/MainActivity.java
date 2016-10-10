@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 //        });
 
         Integer[] mImage = {R.drawable.news,null, R.drawable.menu,R.drawable.main1,R.drawable.main2,R.drawable.main3
-                ,R.drawable.metro_animation};
+                ,R.drawable.metro_animation,null};
 
         ListViewAdapter listViewAdapter = new ListViewAdapter(this, mImage);
 
