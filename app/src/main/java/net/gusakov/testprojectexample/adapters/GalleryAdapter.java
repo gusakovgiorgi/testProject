@@ -26,11 +26,6 @@ public class GalleryAdapter extends BaseAdapter {
     public GalleryAdapter(Context ctx,int[] imageResourceArray){
         mContext=ctx;
         mImage=imageResourceArray;
-//        WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
-//        Display display = wm.getDefaultDisplay();
-//        Point size = new Point();
-//        display.getSize(size);
-//        screenWidth = size.x;
     }
 
     @Override
