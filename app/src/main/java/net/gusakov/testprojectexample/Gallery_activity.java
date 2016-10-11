@@ -8,6 +8,7 @@ import android.widget.ImageView;
 
 import net.gusakov.testprojectexample.adapters.GalleryAdapter;
 import net.gusakov.testprojectexample.adapters.ListViewAdapter;
+import net.gusakov.testprojectexample.database.DatabaseHelper;
 
 public class Gallery_activity extends AppCompatActivity {
 
@@ -16,7 +17,7 @@ public class Gallery_activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gallery_activity);
 
-        int[] imageResources=getIntent().getIntArrayExtra(ListViewAdapter.KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGES_ARRAY);
+//        int[] imageResources=getIntent().getIntArrayExtra(ListViewAdapter.KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGES_IDS_ARRAY);
         int selectedImagePosition=getIntent().getIntExtra(ListViewAdapter.KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGE_POSITION,0);
 
         ImageView backImageView=(ImageView)findViewById(R.id.backImageId);
@@ -36,7 +37,7 @@ public class Gallery_activity extends AppCompatActivity {
         });
 
         final Gallery gallery = (Gallery) findViewById(R.id.galleryId);
-        gallery.setAdapter(new GalleryAdapter(this,imageResources));
+        gallery.setAdapter(new GalleryAdapter(this,new DatabaseHelper(this)));
         gallery.setSelection(selectedImagePosition);
     }
 }

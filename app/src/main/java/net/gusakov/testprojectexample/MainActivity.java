@@ -3,6 +3,7 @@ package net.gusakov.testprojectexample;
 import android.app.ActivityManager;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
@@ -14,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -64,6 +66,15 @@ public class MainActivity extends AppCompatActivity {
         // настраиваем список
         ListView lvMain = (ListView) findViewById(R.id.lvMain);
         lvMain.setAdapter(listViewAdapter);
+        lvMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position==0){
+                    Intent intent=new Intent(MainActivity.this,NewsActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
 
 
 

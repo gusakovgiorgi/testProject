@@ -1,6 +1,8 @@
 package net.gusakov.testprojectexample.adapters;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.view.Display;
 import android.view.View;
@@ -12,6 +14,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import net.gusakov.testprojectexample.R;
+import net.gusakov.testprojectexample.database.DatabaseHelper;
+
+import java.util.ArrayList;
 
 /**
  * Created by hasana on 10/6/2016.
@@ -20,27 +25,29 @@ import net.gusakov.testprojectexample.R;
 public class GalleryAdapter extends BaseAdapter {
 
     private Context mContext;
-    private  int[] mImage = null;
+    private ArrayList<Integer> mImageIds = null;
     int screenWidth;
+    DatabaseHelper mDatabase;
 
-    public GalleryAdapter(Context ctx,int[] imageResourceArray){
+    public GalleryAdapter(Context ctx, DatabaseHelper db){
         mContext=ctx;
-        mImage=imageResourceArray;
+        mDatabase=db;
+        mImageIds=mDatabase.getPosterImagesIds();
     }
 
     @Override
     public int getCount() {
-        return mImage.length;
+        return mImageIds.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mImage[position];
+        return mDatabase.getPostersImage(mImageIds.get(position));
     }
 
     @Override
     public long getItemId(int position) {
-        return  mImage[position];
+        return  position;
     }
 
     @Override
@@ -50,7 +57,7 @@ public class GalleryAdapter extends BaseAdapter {
         if(convertView==null) {
             view = new ImageView(mContext);
         }
-        view.setImageResource(mImage[position]);
+        view.setImageBitmap((Bitmap)getItem(position));
         view.setLayoutParams(new Gallery.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 

@@ -48,7 +48,7 @@ public class ListViewAdapter extends BaseAdapter {
     public static final int KEY_IMAGE_VIEW_TAG = -100;
     private int previousViewWidth;
     private int previousViewHeight;
-    public static final String KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGES_ARRAY = "GALLERY_ACTIVITY_INTENT_EXTRA_IMAGES_ARRAY";
+    public static final String KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGES_IDS_ARRAY = "GALLERY_ACTIVITY_INTENT_EXTRA_IMAGES_ARRAY";
     public static final String KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGE_POSITION = "GALLERY_ACTIVITY_INTENT_EXTRA_IMAGE_POSITION";
     public static final int ALBUM_IMAGE_FIRST_TEMPLATE_RESOURCE_ID=R.drawable.first_album_template;
     public static final int ALBUM_IMAGE_SECOND_TEMPLATE_RESOURCE_ID=R.drawable.second_album_template;
@@ -172,7 +172,7 @@ public class ListViewAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View v) {
                         Intent galleryIntent = new Intent(ctx, Gallery_activity.class);
-                        galleryIntent.putExtra(KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGES_ARRAY, mPosterImage);
+//                        galleryIntent.putExtra(KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGES_IDS_ARRAY, mPosterImage);
                         galleryIntent.putExtra(KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGE_POSITION, (int) v.getTag(KEY_IMAGE_VIEW_TAG));
                         ctx.startActivity(galleryIntent);
                         ((Activity) ctx).overridePendingTransition(R.anim.slide_in_up, R.anim.stay);

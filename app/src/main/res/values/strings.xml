@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TestProjectExample</string>
+    <string name="news">Тут повинні бути новини! Але їх немає?!</string>
 </resources>
