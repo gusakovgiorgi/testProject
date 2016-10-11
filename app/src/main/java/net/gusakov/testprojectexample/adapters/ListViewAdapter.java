@@ -36,57 +36,56 @@ import java.util.NoSuchElementException;
  */
 
 public class ListViewAdapter extends BaseAdapter {
+    private static final int KEY_IMAGE_VIEW_TAG = -100;
+    public static final String KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGE_POSITION = "GALLERY_ACTIVITY_INTENT_EXTRA_IMAGE_POSITION";
+    private static final int ALBUM_IMAGE_FIRST_TEMPLATE_RESOURCE_ID = R.drawable.first_album_template;
+    private static final int ALBUM_IMAGE_SECOND_TEMPLATE_RESOURCE_ID = R.drawable.second_album_template;
+    boolean firstImageTemplateIsUsed = false;
     private DatabaseHelper mDatabse;
     private Context ctx;
     private LayoutInflater lInflater;
-    private Integer[] objects;
+    private Integer[] imageIds;
     private int screenWidth;
     private int screenHeight;
     private float screenDensity;
-    private ArrayList<Integer> mPosterImage =null;
-    private ArrayList<Integer> mAlbumImageIds =null;
-    public static final int KEY_IMAGE_VIEW_TAG = -100;
+    private ArrayList<Integer> mPosterImageIds = null;
+    private ArrayList<Integer> mAlbumImageIds = null;
     private int previousViewWidth;
     private int previousViewHeight;
-    public static final String KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGES_IDS_ARRAY = "GALLERY_ACTIVITY_INTENT_EXTRA_IMAGES_ARRAY";
-    public static final String KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGE_POSITION = "GALLERY_ACTIVITY_INTENT_EXTRA_IMAGE_POSITION";
-    public static final int ALBUM_IMAGE_FIRST_TEMPLATE_RESOURCE_ID=R.drawable.first_album_template;
-    public static final int ALBUM_IMAGE_SECOND_TEMPLATE_RESOURCE_ID=R.drawable.second_album_template;
-    boolean firstImageTemplateIsUsed=false;
 
 
-    public ListViewAdapter(Context context, Integer[] images,DatabaseHelper databaseHelper) {
+    public ListViewAdapter(Context context, Integer[] imageIds, DatabaseHelper databaseHelper) {
         ctx = context;
-        objects = images;
+        this.imageIds = imageIds;
         lInflater = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         GetDisplayParameters();
-        mDatabse=databaseHelper;
-        mPosterImage =mDatabse.getPosterImagesIds();
-        mAlbumImageIds =mDatabse.getAlbumImagesIds();
+        mDatabse = databaseHelper;
+        mPosterImageIds = mDatabse.getPosterImagesIds();
+        mAlbumImageIds = mDatabse.getAlbumImagesIds();
 
     }
 
     private void GetDisplayParameters() {
         WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
-        DisplayMetrics dm=new DisplayMetrics();
+        DisplayMetrics dm = new DisplayMetrics();
         display.getMetrics(dm);
         Point size = new Point();
         display.getSize(size);
         screenWidth = size.x;
-        screenHeight=size.y;
-        screenDensity=dm.density;
+        screenHeight = size.y;
+        screenDensity = dm.density;
     }
 
     @Override
     public int getCount() {
-        return objects.length;
+        return imageIds.length;
     }
 
     @Override
     public Object getItem(int position) {
-        return objects[position];
+        return imageIds[position];
     }
 
     @Override
@@ -96,27 +95,26 @@ public class ListViewAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if (position==1){
+        if (position == 1) {
             return getHorizontalView(parent);
-        }else if(position==6) {
-            return getAnimateedImageView();
-        }else if(position==7) {
+        } else if (position == 6) {
+            return getAnimatedImageView();
+        } else if (position == 7) {
             return getFooterView(parent);
-        }else{
-            return getScaledImageView(objects[position], convertView);
+        } else {
+            return getScaledImageView(imageIds[position], convertView);
         }
     }
 
     @NonNull
     private ImageView getScaledImageView(Integer imageResourceID, View convertView) {
-        ImageView view=null;
-        if(convertView instanceof ImageView) {
+        ImageView view = null;
+        if (convertView instanceof ImageView) {
             view = (ImageView) convertView;
         }
         if (view == null) {
             view = new ImageView(ctx);
         }
-
 
         setScaledImage(view, imageResourceID, 1.0f);
         return view;
@@ -124,28 +122,26 @@ public class ListViewAdapter extends BaseAdapter {
 
     @NonNull
     private View getFooterView(ViewGroup parent) {
-        View view= lInflater.inflate(R.layout.footer_layout,parent,false);
-        HorizontalScrollView horizontalScrollView=(HorizontalScrollView)view.findViewById(R.id.footerHorizontalViewId);
-        horizontalScrollView.getLayoutParams().height=(int)(screenHeight/2.5f);
-        LinearLayout linearLayout=(LinearLayout)view.findViewById(R.id.horizontalSVContainertId);
-        for(int i = 0; i< mAlbumImageIds.size(); i++){
-            linearLayout.addView(returnDrawedView(mDatabse.getAlbumsImage(mAlbumImageIds.get(i))));
+        View view = lInflater.inflate(R.layout.footer_layout, parent, false);
+        HorizontalScrollView horizontalScrollView = (HorizontalScrollView) view.findViewById(R.id.footerHorizontalViewId);
+        horizontalScrollView.getLayoutParams().height = (int) (screenHeight / 2.5f);
+        LinearLayout container = (LinearLayout) view.findViewById(R.id.horizontalSVContainertId);
+        for (int i = 0; i < mAlbumImageIds.size(); i++) {
+            container.addView(returnDrawedView(mDatabse.getAlbumsImage(mAlbumImageIds.get(i))));
         }
         return view;
     }
 
     @NonNull
-    private ImageView getAnimateedImageView() {
-        ImageView view=new ImageView(ctx);
-        AbsListView.LayoutParams params = new AbsListView.LayoutParams(getPreviousViewWidth(), getPreviousViewHeight());
+    private ImageView getAnimatedImageView() {
+        ImageView view = new ImageView(ctx);
+        setPreviousViewWidthAndHeight(view);
         view.setBackgroundResource(R.drawable.metro_animation);
-        view.setLayoutParams(params);
-//                view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
         view.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {
                 AnimationDrawable loadingAnimation = (AnimationDrawable) v.getBackground();
-
                 loadingAnimation.start();
             }
 
@@ -156,58 +152,63 @@ public class ListViewAdapter extends BaseAdapter {
         return view;
     }
 
+    private void setPreviousViewWidthAndHeight(ImageView view) {
+        AbsListView.LayoutParams params = new AbsListView.LayoutParams(getPreviousViewWidth(), getPreviousViewHeight());
+        view.setLayoutParams(params);
+    }
+
     @NonNull
     private View getHorizontalView(ViewGroup parent) {
-        View galleryView =lInflater.inflate(R.layout.horizontal_view,parent,false);
-        LinearLayout linearLayout=(LinearLayout) galleryView.findViewById(R.id.containerId);
-//        Cursor cursor=mDatabse.getPostersImage();
+        View view = lInflater.inflate(R.layout.horizontal_view, parent, false);
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.containerId);
 
+        for (int imageInScrollViewPosition = 0; imageInScrollViewPosition < mPosterImageIds.size(); imageInScrollViewPosition++) {
 
-            for(int imageInScrollViewPosition = 0; imageInScrollViewPosition< mPosterImage.size(); imageInScrollViewPosition++) {
-
-                ImageView imageView = new ImageView(ctx);
-                setScaledImage(imageView, mDatabse.getPostersImage(mPosterImage.get(imageInScrollViewPosition)), 0.8f);
-                imageView.setTag(KEY_IMAGE_VIEW_TAG, imageInScrollViewPosition);
-                imageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent galleryIntent = new Intent(ctx, Gallery_activity.class);
-//                        galleryIntent.putExtra(KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGES_IDS_ARRAY, mPosterImage);
-                        galleryIntent.putExtra(KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGE_POSITION, (int) v.getTag(KEY_IMAGE_VIEW_TAG));
-                        ctx.startActivity(galleryIntent);
-                        ((Activity) ctx).overridePendingTransition(R.anim.slide_in_up, R.anim.stay);
-                    }
-                });
-
-//            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-                linearLayout.addView(imageView);
-            }
-        return galleryView;
+            ImageView imageView = new ImageView(ctx);
+            setScaledImage(imageView, mDatabse.getPostersImage(mPosterImageIds.get(imageInScrollViewPosition)), 0.8f);
+            imageView.setTag(KEY_IMAGE_VIEW_TAG, imageInScrollViewPosition);
+            setImageClickListener(imageView);
+            linearLayout.addView(imageView);
+        }
+        return view;
 
     }
 
-    private View returnDrawedView(Bitmap tmpBitMap){
+    private void setImageClickListener(ImageView imageView) {
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent galleryIntent = new Intent(ctx, Gallery_activity.class);
+                galleryIntent.putExtra(KEY_GALLERY_ACTIVITY_INTENT_EXTRA_IMAGE_POSITION, (int) v.getTag(KEY_IMAGE_VIEW_TAG));
+                StartActivityFromBottomToTop(galleryIntent);
+            }
+        });
+    }
+
+    private void StartActivityFromBottomToTop(Intent galleryIntent) {
+        ctx.startActivity(galleryIntent);
+        ((Activity) ctx).overridePendingTransition(R.anim.slide_in_up, R.anim.stay);
+    }
+
+    private View returnDrawedView(Bitmap tmpBitMap) {
         int templateid;
         float angle;
-        if(!firstImageTemplateIsUsed){
-            templateid=ALBUM_IMAGE_FIRST_TEMPLATE_RESOURCE_ID;
-            angle=3.0f;
-            firstImageTemplateIsUsed=true;
-        }else{
-            templateid=ALBUM_IMAGE_SECOND_TEMPLATE_RESOURCE_ID;
-            angle=2.0f;
-            firstImageTemplateIsUsed=false;
+        if (!firstImageTemplateIsUsed) {
+            templateid = ALBUM_IMAGE_FIRST_TEMPLATE_RESOURCE_ID;
+            angle = 3.0f;
+            firstImageTemplateIsUsed = true;
+        } else {
+            templateid = ALBUM_IMAGE_SECOND_TEMPLATE_RESOURCE_ID;
+            angle = 2.0f;
+            firstImageTemplateIsUsed = false;
         }
         Bitmap bitmap = BitmapFactory.decodeResource(ctx
                 .getResources(), templateid);
 
-//        Bitmap bitmap = BitmapFactory.decodeResource(ctx
-//                .getResources(), imageResourceId);
-        Matrix matrix=new Matrix();
-        matrix.setRotate(angle,tmpBitMap.getWidth()/2,tmpBitMap.getHeight()/2);
+        Matrix matrix = new Matrix();
+        matrix.setRotate(angle, tmpBitMap.getWidth() / 2, tmpBitMap.getHeight() / 2);
 
-        Bitmap rotatedBitmap = Bitmap.createBitmap(tmpBitMap,0,0,tmpBitMap.getWidth(),tmpBitMap.getHeight(),matrix,true);
+        Bitmap rotatedBitmap = Bitmap.createBitmap(tmpBitMap, 0, 0, tmpBitMap.getWidth(), tmpBitMap.getHeight(), matrix, true);
 
         tmpBitMap.recycle();
 
@@ -220,41 +221,38 @@ public class ListViewAdapter extends BaseAdapter {
         canvas.drawBitmap(bitmap, 0, 0, null);
         bitmap.recycle();
 
-        canvas.drawBitmap(rotatedBitmap,30*screenDensity,65*screenDensity,null);
+        canvas.drawBitmap(rotatedBitmap, 30 * screenDensity, 65 * screenDensity, null);
 
         rotatedBitmap.recycle();
 
-        BitmapDrawable dr = new BitmapDrawable(bmOverlay);
-        dr.setBounds(0, 0, dr.getIntrinsicWidth(), dr.getIntrinsicHeight());
+        BitmapDrawable bitmapDrawable = new BitmapDrawable(bmOverlay);
+        bitmapDrawable.setBounds(0, 0, bitmapDrawable.getIntrinsicWidth(), bitmapDrawable.getIntrinsicHeight());
 
-        ImageView imageView=new ImageView(ctx);
+        ImageView imageView = new ImageView(ctx);
 
-        LinearLayout.LayoutParams params=new LinearLayout.LayoutParams((int)(bmOverlay.getWidth()/1.5),(int)(bmOverlay.getHeight()/1.5));
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) (bmOverlay.getWidth() / 1.5), (int) (bmOverlay.getHeight() / 1.5));
         imageView.setLayoutParams(params);
 
-                imageView.setImageDrawable(dr);
+        imageView.setImageDrawable(bitmapDrawable);
+//        bmOverlay.recycle();
+
         return imageView;
     }
-    private void setScaledImage(ImageView view,int drawableId,float scaleParameter) throws NoSuchElementException {
+
+    private void setScaledImage(ImageView view, int drawableId, float scaleParameter) throws NoSuchElementException {
         // Get bitmap from the the ImageView.
         Bitmap bitmap = getBitmap(drawableId);
         scaleAndSetBitmapToView(view, scaleParameter, bitmap);
 
 
     }
-    private void setScaledImage(ImageView view,Bitmap bitmap,float scaleParameter) throws NoSuchElementException {
-        // Get bitmap from the the ImageView.
-//        Bitmap bitmap = getBitmap(bitmapDrawable);
-//        view.setImageBitmap(bitmap);
-//        AbsListView.LayoutParams params = new AbsListView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//        view.setLayoutParams(params);
-        scaleAndSetBitmapToView(view, scaleParameter, bitmap);
 
+    private void setScaledImage(ImageView view, Bitmap bitmap, float scaleParameter) throws NoSuchElementException {;
+        scaleAndSetBitmapToView(view, scaleParameter, bitmap);
 
     }
 
     private void scaleAndSetBitmapToView(ImageView view, float scaleParameter, Bitmap bitmap) {
-        // Get current dimensions AND the desired bounding box
         int width;
 
         try {
@@ -265,28 +263,32 @@ public class ListViewAdapter extends BaseAdapter {
 
 
         int height = bitmap.getHeight();
-        int bounding =(int)(screenWidth*scaleParameter);
+
+        int bounding = (int) (screenWidth * scaleParameter);
 
         float ScaleParameter = ((float) bounding) / width;
 
         Matrix matrix = new Matrix();
         matrix.postScale(ScaleParameter, ScaleParameter);
 
-        // Create a new bitmap and convert it to a format understood by the ImageView
         Bitmap scaledBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
+        bitmap.recycle();
+
         width = scaledBitmap.getWidth(); // re-use
         height = scaledBitmap.getHeight(); // re-use
-        BitmapDrawable result = new BitmapDrawable(scaledBitmap);
+
+        BitmapDrawable resultBitMapDrawable = new BitmapDrawable(scaledBitmap);
 
         // Apply the scaled bitmap
-        view.setImageDrawable(result);
+        view.setImageDrawable(resultBitMapDrawable);
 
-        saveDimensions(width,height);
+        //save dimensions for next view if it needed
+        saveDimensions(width, height);
+
         // Now change ImageView's dimensions to match the scaled image
-        AbsListView.LayoutParams params = new AbsListView.LayoutParams(width,height);
+        AbsListView.LayoutParams params = new AbsListView.LayoutParams(width, height);
         view.setLayoutParams(params);
 
-        bitmap.recycle();
 //        scaledBitmap.recycle();
     }
 
@@ -323,13 +325,15 @@ public class ListViewAdapter extends BaseAdapter {
     }
 
     private void saveDimensions(int width, int height) {
-        previousViewWidth=width;
-        previousViewHeight=height;
+        previousViewWidth = width;
+        previousViewHeight = height;
     }
-    private int getPreviousViewWidth(){
+
+    private int getPreviousViewWidth() {
         return previousViewWidth;
     }
-    private int getPreviousViewHeight(){
+
+    private int getPreviousViewHeight() {
         return previousViewHeight;
     }
 
